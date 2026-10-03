@@ -10,5 +10,25 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql
 
+  task-service:
+    image: task-service
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://postgres:5432/tasks
+      QUARKUS_DATASOURCE_USERNAME: tasks
+      QUARKUS_DATASOURCE_PASSWORD: tasks
+    depends_on:
+      - postgres
+    develop:
+      watch:
+      - action: rebuild
+        path: ../src
+      - action: rebuild
+        path: ../build.gradle.kts
+
 volumes:
   postgres-data:
