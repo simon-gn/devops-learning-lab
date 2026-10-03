@@ -24,6 +24,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("io.quarkus:quarkus-arc")
     implementation("org.jooq:jooq:3.21.9")
+    implementation("io.quarkus:quarkus-flyway")
     jooqCodegen("org.postgresql:postgresql:42.7.13")
     testImplementation("io.quarkus:quarkus-junit")
     testImplementation("io.rest-assured:rest-assured")
