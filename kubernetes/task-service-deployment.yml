@@ -16,12 +16,47 @@ spec:
         - name: task-service
           image: task-service:latest
           imagePullPolicy: IfNotPresent
+
           ports:
             - containerPort: 8080
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+          readinessProbe:
+            httpGet:
+              path: /q/health/ready
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
+          livenessProbe:
+            httpGet:
+              path: /q/health/live
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+
           env:
             - name: QUARKUS_DATASOURCE_JDBC_URL
-              value: jdbc:postgresql://postgres:5432/tasks
+              valueFrom:
+                configMapKeyRef:
+                  name: task-service-config
+                  key: QUARKUS_DATASOURCE_JDBC_URL
+
             - name: QUARKUS_DATASOURCE_USERNAME
-              value: tasks
+              valueFrom:
+                configMapKeyRef:
+                  name: task-service-config
+                  key: QUARKUS_DATASOURCE_USERNAME
+
             - name: QUARKUS_DATASOURCE_PASSWORD
-              value: tasks
+              valueFrom:
+                secretKeyRef:
+                  name: task-service-secret
+                  key: QUARKUS_DATASOURCE_PASSWORD

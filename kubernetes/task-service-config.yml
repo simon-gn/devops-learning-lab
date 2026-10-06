@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: task-service-config
+data:
+  QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://postgres:5432/tasks
+  QUARKUS_DATASOURCE_USERNAME: tasks

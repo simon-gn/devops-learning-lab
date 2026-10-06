@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgres
+
 spec:
   replicas: 1
   selector:
@@ -15,18 +16,52 @@ spec:
       containers:
         - name: postgres
           image: postgres:18
+
           ports:
             - containerPort: 5432
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - tasks
+                - -d
+                - tasks
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
           env:
             - name: POSTGRES_DB
-              value: tasks
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: POSTGRES_DB
+
             - name: POSTGRES_USER
-              value: tasks
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: POSTGRES_USER
+
             - name: POSTGRES_PASSWORD
-              value: tasks
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+
           volumeMounts:
             - name: postgres-data
               mountPath: /var/lib/postgresql
+
       volumes:
         - name: postgres-data
           persistentVolumeClaim:
